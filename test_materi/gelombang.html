@@ -248,9 +248,9 @@
         try {
             await fetch(`${scriptURL}?${queryString}`, { method: 'POST', mode: 'no-cors' });
             Swal.fire("Selesai!", `Skor Akhir: ${finalScore.toFixed(1)}`, "success")
-            .then(() => window.location.href = "../../dashboard.html");
+            .then(() => window.location.href = "../dashboard.html");
         } catch (e) {
-            window.location.href = "../../dashboard.html";
+            window.location.href = "../dashboard.html";
         }
     }
 
