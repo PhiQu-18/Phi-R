@@ -160,12 +160,12 @@ async function submitResults() {
             icon: "success",
             confirmButtonText: "OK"
         }).then(() => {
-            window.location.href = "../../materi/bunyi.html";
+            window.location.href = "../materi/bunyi.html";
         });
     } catch(e) {
         console.error("Error submit:", e);
         // Tetap pindah halaman jika gagal fetch (agar user tidak stuck)
-        window.location.href = "../../materi/bunyi.html";
+        window.location.href = "../materi/bunyi.html";
     }
 }
 
