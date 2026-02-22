@@ -151,11 +151,11 @@ async function submitResults() {
             text: 'Tes awal cahaya selesai. Hasilmu sudah terekam.',
             confirmButtonText: 'Lanjutkan ke Materi'
         }).then(() => {
-            window.location.href = "../test_materi/cahaya.html";
+            window.location.href = "../materi/cahaya.html";
         });
     } catch(e) {
         console.error("Error submitting:", e);
-        window.location.href = "../test_materi/cahaya.html";
+        window.location.href = "../materi/cahaya.html";
     }
 }
 
