@@ -255,10 +255,12 @@
             50% { opacity: 0.8; }
         }
         
-        /* Content spacing for scroll */
+        /* Content spacing for scroll - MODIFIED: align to top */
         .content-wrapper {
             min-height: 100%;
             padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
         }
         
         /* Sound wave animation */
@@ -311,9 +313,9 @@
                 </div>
             </div>
             
-            <!-- Content -->
-            <div class="relative z-10 min-h-full flex flex-col items-center justify-center px-6 text-center content-wrapper">
-                <div class="mb-6 flex items-end gap-1 h-16">
+            <!-- Content - MODIFIED: items-start instead of items-center, pt-32 -->
+            <div class="relative z-10 min-h-full flex flex-col items-center justify-start px-6 text-center content-wrapper pt-24 md:pt-28">
+                <div class="mb-6 flex items-end gap-1 h-16 mt-8">
                     <div class="w-2 bg-amber-500 rounded-full sound-bar" style="animation-delay: 0s; height: 40%"></div>
                     <div class="w-2 bg-amber-500 rounded-full sound-bar" style="animation-delay: 0.1s; height: 70%"></div>
                     <div class="w-2 bg-amber-500 rounded-full sound-bar" style="animation-delay: 0.2s; height: 100%"></div>
@@ -344,8 +346,9 @@
 
         <!-- SLIDE 2: PETA KONSEP -->
         <section class="slide bg-slate-900" id="slide-2">
+            <!-- MODIFIED: Removed items-center, added pt-20 to content-wrapper -->
             <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
-                <div class="max-w-5xl mx-auto">
+                <div class="max-w-5xl mx-auto w-full">
                     <div class="flex justify-between items-center mb-6 md:mb-8">
                         <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                             Peta Konsep
@@ -449,7 +452,8 @@
 
         <!-- SLIDE 3: TUJUAN -->
         <section class="slide bg-slate-900" id="slide-3">
-            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24 flex items-center">
+            <!-- MODIFIED: Removed flex items-center, added pt-20 -->
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
                 <div class="max-w-3xl mx-auto w-full">
                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Tujuan Pembelajaran
@@ -503,7 +507,7 @@
         <!-- SLIDE 4: VIDEO -->
         <section class="slide bg-slate-900" id="slide-4">
             <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
-                <div class="max-w-3xl mx-auto">
+                <div class="max-w-3xl mx-auto w-full">
                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Video Pembelajaran
                     </h2>
@@ -560,7 +564,7 @@
         <!-- SLIDE 5: MATERI RINGKASAN -->
         <section class="slide bg-slate-900" id="slide-5">
             <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
-                <div class="max-w-4xl mx-auto">
+                <div class="max-w-4xl mx-auto w-full">
                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Materi Pokok
                     </h2>
@@ -645,7 +649,7 @@
         <!-- SLIDE 6: CODING LAB -->
         <section class="slide bg-slate-900" id="slide-6">
             <div class="content-wrapper p-4 md:p-6 pt-16 md:pt-20">
-                <div class="max-w-5xl mx-auto">
+                <div class="max-w-5xl mx-auto w-full">
                     <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent flex items-center gap-2">
                         <i class="fas fa-flask"></i> Sound Coding Lab
                     </h2>
@@ -750,7 +754,7 @@ print(f"Cepat rambat bunyi: {v} m/s")
         <!-- SLIDE 7: APLIKASI & RANGKUMAN -->
         <section class="slide bg-slate-900" id="slide-7">
             <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
-                <div class="max-w-4xl mx-auto">
+                <div class="max-w-4xl mx-auto w-full">
                     <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                         Aplikasi & Rangkuman
                     </h2>
