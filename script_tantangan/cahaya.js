@@ -151,11 +151,11 @@ async function submitResults() {
             text: 'Tes awal cahaya selesai. Hasilmu sudah terekam.',
             confirmButtonText: 'Lanjutkan ke Materi'
         }).then(() => {
-            window.location.href = "../../dashboard.html";
+            window.location.href = "../dashboard.html";
         });
     } catch(e) {
         console.error("Error submitting:", e);
-        window.location.href = "../../dashboard.html";
+        window.location.href = "../dashboard.html";
     }
 }
 
