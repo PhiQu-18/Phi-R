@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Phi-R | Gelombang Dasar</title>
+    <link rel="icon" type="image/png" href="../foto/1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background: #0f172a;
+        }
+        
+        /* Main Container - Horizontal Scroll Snap */
+        .slider-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .slider-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Each Slide - Full viewport width, scrollable vertically */
+        .slide {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Custom Scrollbar for slide content */
+        .slide::-webkit-scrollbar {
+            width: 4px;
+        }
+        .slide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .slide::-webkit-scrollbar-thumb {
+            background: rgba(99,102,241,0.3);
+            border-radius: 2px;
+        }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Slide Indicators */
+        .slide-indicators {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(15,23,42,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #6366f1;
+            width: 24px;
+            border-radius: 4px;
+        }
+        
+        /* Navigation Arrows (Desktop) */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 90;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-arrow:hover {
+            background: rgba(99,102,241,0.3);
+        }
+        
+        .nav-arrow.prev { left: 10px; }
+        .nav-arrow.next { right: 10px; }
+        
+        @media (max-width: 768px) {
+            .nav-arrow { display: none; }
+            .slide-indicators {
+                bottom: 10px;
+                padding: 6px 12px;
+            }
+            .indicator {
+                width: 6px;
+                height: 6px;
+            }
+            .indicator.active {
+                width: 18px;
+            }
+        }
+        
+        /* Code Editor */
+        .code-area {
+            font-family: 'Courier New', monospace;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            line-height: 1.6;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+            50% { box-shadow: 0 0 40px rgba(99,102,241,0.6); }
+        }
+        
+        .glow-effect {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        /* Concept Cards */
+        .concept-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .concept-card:active {
+            transform: scale(0.98);
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-outline {
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+        
+        /* Swipe hint */
+        .swipe-hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            animation: fadeInOut 2s infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+/* Content spacing for scroll */
+        .content-wrapper {
+            min-height: 100%;
+            padding-bottom: 40px;
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <!-- Main Slider Container -->
+    <div class="slider-container" id="slider">
+        
+        <!-- SLIDE 1: COVER -->
+        <section class="slide" id="slide-1">
+            <!-- Background -->
+            <div class="absolute inset-0 z-0">
+                <img src="../foto/1.jpg" 
+                     alt="Background" 
+                     class="w-full h-full object-cover opacity-40"
+                     id="cover-bg">
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900/90"></div>
+            </div>
+            
+            <!-- Header -->
+            <div class="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
+                        <i class="fas fa-wave-square text-white text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-sm md:text-lg tracking-tight">Phi-R</h1>
+                        <p class="text-[10px] md:text-xs text-gray-400">Gelombang Dasar</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-2 md:gap-3">
+                    <button onclick="openModal('modal-tentang')" class="btn-outline px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="hidden sm:inline">Tentang</span>
+                    </button>
+                    <button onclick="goToExternal('../../dashboard.html')" class="btn-primary px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                        <i class="fas fa-home"></i>
+                        <span class="hidden sm:inline">Home</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="relative z-10 min-h-full flex flex-col items-center justify-center px-6 text-center content-wrapper">
+                <div class="mb-6 animate-float">
+                    <div class="w-20 h-20 md:w-28 md:h-28 mx-auto rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 backdrop-blur-xl flex items-center justify-center border border-white/10">
+                        <i class="fas fa-water text-3xl md:text-5xl text-indigo-400"></i>
+                    </div>
+                </div>
+                
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-indigo-200 to-purple-200 bg-clip-text text-transparent">
+                    GELOMBANG
+                </h2>
+                <p class="text-gray-300 text-sm md:text-lg max-w-md mb-8 px-4">
+                    Pelajari konsep gelombang melalui computational thinking dan coding interaktif
+                </p>
+                
+                <button onclick="scrollToNext()" class="btn-primary px-8 py-3 md:px-10 md:py-4 rounded-full font-semibold text-sm md:text-base flex items-center gap-2 glow-effect">
+                    Mulai Belajar
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <div class="swipe-hint">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Swipe untuk navigasi</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </section>
+
+<!-- SLIDE 2: PETA KONSEP -->
+        <section class="slide bg-slate-900" id="slide-2">
+            <div class="content-wrapper p-4 md:p-8 pt-16 md:pt-20">
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex justify-between items-center mb-6 md:mb-8">
+                        <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                            Peta Konsep
+                        </h2>
+                        <button onclick="openModal('modal-glosarium')" class="btn-outline px-3 py-2 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                            <i class="fas fa-book"></i>
+                            <span class="hidden sm:inline">Glosarium</span>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mb-8 md:mb-12">
+                        <div class="inline-block glass px-6 py-4 md:px-8 md:py-6 rounded-2xl glow-effect">
+                            <i class="fas fa-water text-2xl md:text-3xl text-indigo-400 mb-2"></i>
+                            <h3 class="text-xl md:text-2xl font-bold">GELOMBANG</h3>
+                            <p class="text-xs md:text-sm text-gray-400 mt-1">Rambatan energi melalui medium</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-8">
+                        <div class="concept-card glass p-4 md:p-6 rounded-xl" onclick="openModal('modal-jenis')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-indigo-500/20 flex items-center justify-center mb-3 md:mb-4">
+                                <i class="fas fa-layer-group text-indigo-400 text-lg md:text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Jenis-Jenis</h4>
+                            <ul class="text-xs md:text-sm text-gray-400 space-y-1">
+                                <li>• Transversal</li>
+                                <li>• Longitudinal</li>
+                                <li>• Mekanik & EM</li>
+                            </ul>
+                            <div class="mt-3 text-indigo-400 text-xs flex items-center gap-1">
+                                Detail <i class="fas fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="concept-card glass p-4 md:p-6 rounded-xl" onclick="openModal('modal-fase')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-purple-500/20 flex items-center justify-center mb-3 md:mb-4">
+                                <i class="fas fa-adjust text-purple-400 text-lg md:text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Beda Fase</h4>
+                            <ul class="text-xs md:text-sm text-gray-400 space-y-1">
+                                <li>• Se-fase (0°)</li>
+                                <li>• Berlawanan (180°)</li>
+                                <li>• Interferensi</li>
+                            </ul>
+                            <div class="mt-3 text-purple-400 text-xs flex items-center gap-1">
+                                Detail <i class="fas fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="concept-card glass p-4 md:p-6 rounded-xl" onclick="openModal('modal-prinsip')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-cyan-500/20 flex items-center justify-center mb-3 md:mb-4">
+                                <i class="fas fa-balance-scale text-cyan-400 text-lg md:text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Prinsip</h4>
+                            <ul class="text-xs md:text-sm text-gray-400 space-y-1">
+                                <li>• Superposisi</li>
+                                <li>• Pemantulan</li>
+                                <li>• Pembiasan</li>
+                            </ul>
+                            <div class="mt-3 text-cyan-400 text-xs flex items-center gap-1">
+                                Detail <i class="fas fa-arrow-right text-[10px]"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional scrollable content -->
+                    <div class="glass p-4 rounded-xl mb-4">
+                        <h4 class="font-bold text-sm mb-2 text-indigo-400">Pembagian Berdasarkan Medium</h4>
+                        <p class="text-xs text-gray-400 mb-3">Gelombang dapat diklasifikasikan berdasarkan kebutuhan medium perambatannya:</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white/5 p-3 rounded-lg">
+                                <div class="font-semibold text-xs mb-1">Gelombang Mekanik</div>
+                                <p class="text-[10px] text-gray-500">Memerlukan medium (suara, air, tali)</p>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg">
+                                <div class="font-semibold text-xs mb-1">Gelombang EM</div>
+                                <p class="text-[10px] text-gray-500">Tidak perlu medium (cahaya, radio)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- SLIDE 3: TUJUAN -->
+        <section class="slide bg-slate-900" id="slide-3">
+            <div class="content-wrapper p-4 md:p-8 pt-4 md:pt-6 flex items-center">
+                <div class="max-w-3xl mx-auto w-full">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        Tujuan Pembelajaran
+                    </h2>
+                    
+                    <div class="space-y-3 md:space-y-4 mb-8">
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-brain text-indigo-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Computational Thinking</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Mengembangkan kemampuan berpikir komputasional melalui pemecahan masalah gelombang</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-code text-purple-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Coding Skill</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Mampu mengimplementasikan konsep gelombang dalam bentuk algoritma sederhana</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-wave-square text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Konsep Fisika</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Memahami karakteristik dan perilaku gelombang dalam kehidupan nyata</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-pink-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-lightbulb text-pink-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Problem Solving</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Menganalisis dan menyelesaikan permasalahan terkait gelombang</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: VIDEO -->
+        <section class="slide bg-slate-900" id="slide-4">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        Video Pembelajaran
+                    </h2>
+                    
+                    <div class="relative rounded-xl overflow-hidden shadow-2xl bg-black aspect-video mb-4">
+                        <iframe id="video-frame" 
+                                class="w-full h-full"
+                                src="../foto/gelombang.mp4" 
+                                frameborder="0" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-2 mb-4">
+                        <button onclick="changeVideo('jp2Ma7UulzU', 'Pengenalan')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-indigo-400"></i> Pengenalan
+                        </button>
+                        <button onclick="changeVideo('cujOchCZzXk', 'Jenis Gelombang')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-purple-400"></i> Jenis
+                        </button>
+                        <button onclick="changeVideo('fJH1uDmp4Yw', 'Karakteristik')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-cyan-400"></i> Karakteristik
+                        </button>
+                    </div>
+                    
+                    <p id="video-title" class="text-center text-gray-400 text-xs md:text-sm mb-6">
+                        <i class="fas fa-circle-info mr-1"></i> Sedang diputar: Pengenalan Gelombang
+                    </p>
+
+                    <div class="glass p-4 rounded-xl">
+                        <h4 class="font-bold text-sm mb-3 text-indigo-400">Catatan Penting</h4>
+                        <ul class="space-y-2 text-xs text-gray-400">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Perhatikan perbedaan arah getar pada gelombang transversal dan longitudinal</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Catat rumus-rumus dasar yang muncul dalam video</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Identifikasi contoh gelombang dalam kehidupan sehari-hari</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- SLIDE 5: CODING LAB -->
+        <section class="slide bg-slate-900" id="slide-5">
+            <div class="content-wrapper p-4 md:p-6 pt-12 md:pt-16">
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent flex items-center gap-2">
+                        <i class="fas fa-flask"></i> Wave Coding Lab
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
+                        <!-- Left: Code Editor -->
+                        <div class="flex flex-col gap-3">
+                            <div class="glass p-3 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="bg-indigo-500 text-white text-[10px] px-2 py-0.5 rounded font-bold">TANTANGAN</span>
+                                    <span class="text-xs text-gray-400" id="level-indicator">Level 1/3</span>
+                                </div>
+                                <p class="text-xs md:text-sm text-gray-300" id="task-desc">
+                                    Buat gelombang sinus dengan amplitudo 50 dan frekuensi 2!
+                                </p>
+                            </div>
+                            
+                            <div class="glass rounded-lg overflow-hidden flex flex-col" style="height: 250px;">
+                                <div class="bg-slate-800 px-3 py-2 flex justify-between items-center border-b border-slate-700">
+                                    <span class="text-xs text-gray-400">script.py</span>
+                                    <div class="flex gap-2">
+                                        <button onclick="resetCode()" class="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                        <button onclick="runCode()" class="text-xs px-3 py-1 rounded bg-green-600 hover:bg-green-500 transition-colors font-medium flex items-center gap-1">
+                                            <i class="fas fa-play"></i> Run
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea id="code-editor" class="flex-1 code-area p-3 text-xs outline-none resize-none" spellcheck="false">
+# Parameter gelombang
+A = 50          # Amplitudo
+f = 2           # Frekuensi
+
+# Fungsi gelombang: y = A * sin(f * x)
+def gelombang(x):
+    import math
+    rad = math.radians(x)
+    return A * math.sin(f * rad)
+
+# Generate data
+data = []
+for x in range(0, 361, 10):
+    y = gelombang(x)
+    data.append((x, y))
+
+print(f"Data: {len(data)} titik")
+print(f"Max: {max(y for x,y in data):.1f}")
+                                </textarea>
+                            </div>
+                            
+                            <div class="glass rounded-lg p-3">
+                                <div class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                                    <i class="fas fa-terminal"></i> Output
+                                </div>
+                                <div id="code-output" class="text-xs font-mono text-gray-300 min-h-[40px]">
+                                    Klik Run untuk menjalankan...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Visualization -->
+                        <div class="flex flex-col gap-3">
+                            <div class="glass rounded-lg p-3 relative" style="height: 250px;">
+                                <canvas id="wave-canvas" class="w-full h-full"></canvas>
+                                <div class="absolute top-3 right-3 text-[10px] text-gray-500 bg-slate-900/80 px-2 py-1 rounded">
+                                    Visualisasi
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">Amplitudo</div>
+                                    <div class="text-lg font-bold text-indigo-400" id="stat-a">50</div>
+                                </div>
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">Frekuensi</div>
+                                    <div class="text-lg font-bold text-purple-400" id="stat-f">2</div>
+                                </div>
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">Panjang</div>
+                                    <div class="text-lg font-bold text-cyan-400">180°</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between gap-2">
+                                <button onclick="prevLevel()" id="btn-prev-level" class="flex-1 glass py-2 rounded-lg text-xs hover:bg-white/5 transition-colors disabled:opacity-50" disabled>
+                                    <i class="fas fa-chevron-left"></i> Prev
+                                </button>
+                                <button onclick="checkLevel()" class="flex-1 btn-primary py-2 rounded-lg text-xs font-medium">
+                                    Check
+                                </button>
+                                <button onclick="nextLevel()" id="btn-next-level" class="flex-1 glass py-2 rounded-lg text-xs hover:bg-white/5 transition-colors">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+
+                            <div class="glass p-3 rounded-lg">
+                                <h4 class="font-bold text-xs mb-2 text-indigo-400">Tips Coding:</h4>
+                                <ul class="text-[10px] text-gray-400 space-y-1">
+                                    <li>• Gunakan math.radians() untuk konversi derajat ke radian</li>
+                                    <li>• Amplitudo menentukan tinggi gelombang</li>
+                                    <li>• Frekuensi menentukan banyaknya gelombang dalam satu siklus</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+<!-- SLIDE 6: RANGKUMAN -->
+        <section class="slide bg-slate-900" id="slide-6">
+            <div class="content-wrapper p-4 md:p-8 pt-16 md:pt-20 flex flex-col items-center justify-center min-h-full">
+                <div class="max-w-2xl w-full text-center">
+                    <div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mb-4 md:mb-6 animate-float">
+                        <i class="fas fa-check text-2xl md:text-3xl text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        Rangkuman
+                    </h2>
+                    
+                    <div class="glass p-4 md:p-6 rounded-xl text-left mb-6 md:mb-8">
+                        <h3 class="font-bold text-base md:text-lg mb-3 text-indigo-400">Yang telah dipelajari:</h3>
+                        <ul class="space-y-2 text-xs md:text-sm text-gray-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span>Gelombang adalah rambatan energi yang memerlukan medium (mechanik) atau tidak (elektromagnetik)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span>Jenis gelombang: Transversal (getar ⊥ rambat) dan Longitudinal (getar ∥ rambat)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span>Besarannya: Amplitudo (A), Frekuensi (f), Panjang gelombang (λ), Cepat rambat (v)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span>Prinsip superposisi: y_total = y1 + y2 (interferensi konstruktif/destruktif)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span>Implementasi coding: Menggunakan Python untuk mensimulasikan gelombang</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button onclick="goToSlide(0)" class="glass px-6 py-3 rounded-full text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-redo"></i> Ulangi
+                        </button>
+                        <button onclick="goToExternal('../../test_materi/gelombang.html')" class="btn-primary px-6 py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2">
+                            <i class="fas fa-external-link-alt"></i> Halaman Evaluasi
+                        </button>
+                    </div>
+                    
+                    <p class="mt-6 md:mt-8 text-xs text-gray-500">
+                        <i class="fas fa-graduation-cap mr-1"></i> Selamat belajar! Semoga sukses.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Arrows (Desktop) -->
+    <div class="nav-arrow prev" onclick="scrollPrev()">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="nav-arrow next" onclick="scrollNext()">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Slide Indicators -->
+    <div class="slide-indicators">
+        <div class="indicator active" onclick="goToSlide(0)"></div>
+        <div class="indicator" onclick="goToSlide(1)"></div>
+        <div class="indicator" onclick="goToSlide(2)"></div>
+        <div class="indicator" onclick="goToSlide(3)"></div>
+        <div class="indicator" onclick="goToSlide(4)"></div>
+        <div class="indicator" onclick="goToSlide(5)"></div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="modal-tentang" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-info-circle text-indigo-400"></i> Tentang Modul
+                </h3>
+                <button onclick="closeModalById('modal-tentang')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-sm text-gray-300">
+                <p>Modul pembelajaran <strong>WaveLearn</strong> adalah media interaktif untuk mempelajari konsep gelombang fisika dengan pendekatan computational thinking.</p>
+                
+                <div class="glass p-3 rounded-lg space-y-2">
+                    <h4 class="font-semibold text-white text-sm">Fitur Utama:</h4>
+                    <ul class="space-y-1 text-xs">
+                        <li>• Peta konsep interaktif</li>
+                        <li>• Video pembelajaran kurasi</li>
+                        <li>• Coding lab (Python)</li>
+                        <li>• Simulasi real-time</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-5 pt-4 border-t border-gray-700">
+                <a href="https://wa.me/6283182514910" target="_blank" 
+                   class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                    Chat Admin WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-glosarium" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-book text-purple-400"></i> Glosarium
+                </h3>
+                <button onclick="closeModalById('modal-glosarium')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-indigo-400 text-sm mb-1">Amplitudo (A)</h4>
+                    <p class="text-xs text-gray-300">Simpangan maksimum partikel dari posisi setimbang. Satuan: meter (m).</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-purple-400 text-sm mb-1">Frekuensi (f)</h4>
+                    <p class="text-xs text-gray-300">Banyaknya getaran per detik. Satuan: Hertz (Hz). Rumus: f = 1/T</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-cyan-400 text-sm mb-1">Panjang Gelombang (λ)</h4>
+                    <p class="text-xs text-gray-300">Jarak antara dua titik yang berfase sama berurutan. Satuan: meter (m).</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-pink-400 text-sm mb-1">Periode (T)</h4>
+                    <p class="text-xs text-gray-300">Waktu untuk satu getaran penuh. Satuan: sekon (s). Rumus: T = 1/f</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-yellow-400 text-sm mb-1">Cepat Rambat (v)</h4>
+                    <p class="text-xs text-gray-300">Kecepatan perambatan gelombang. Rumus: v = λ × f</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-jenis" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-jenis')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-indigo-400">Jenis-Jenis Gelombang</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <div>
+                    <h4 class="font-semibold text-white mb-1">1. Berdasarkan Arah Getar</h4>
+                    <ul class="space-y-1 text-xs ml-2">
+                        <li><strong>Transversal:</strong> Arah getar ⊥ arah rambat. Contoh: gelombang tali, cahaya.</li>
+                        <li><strong>Longitudinal:</strong> Arah getar ∥ arah rambat. Contoh: gelombang suara.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-1">2. Berdasarkan Medium</h4>
+                    <ul class="space-y-1 text-xs ml-2">
+                        <li><strong>Mekanik:</strong> Memerlukan medium. Contoh: suara, air.</li>
+                        <li><strong>Elektromagnetik:</strong> Tidak perlu medium. Contoh: cahaya, radio.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-fase" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-fase')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-purple-400">Beda Fase Gelombang</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <p class="text-xs">Beda fase (Δφ) menunjukkan perbedaan keadaan getar antara dua titik.</p>
+                
+                <div class="glass p-3 rounded text-center font-mono text-xs">
+                    Δφ = (Δx/λ) × 2π
+                </div>
+                
+                <ul class="space-y-2 text-xs">
+                    <li class="flex items-start gap-2">
+                        <span class="text-green-400 font-bold">•</span>
+                        <span><strong>Se-fase (Δφ = 0, 2π...):</strong> Penguatan (konstruktif)</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-400 font-bold">•</span>
+                        <span><strong>Berlawanan (Δφ = π, 3π...):</strong> Pelemahan (destruktif)</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-prinsip" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-prinsip')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-cyan-400">Prinsip-Prinsip Gelombang</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <div>
+                    <h4 class="font-semibold text-white text-xs mb-1">Superposisi</h4>
+                    <p class="text-xs">y_total = y1 + y2. Jumlah algebraik dari gelombang-gelombang yang bertemu.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white text-xs mb-1">Pemantulan</h4>
+                    <p class="text-xs">Sudut datang = Sudut pantul. Terjadi pada batas medium.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white text-xs mb-1">Pembiasan</h4>
+                    <p class="text-xs">Pembengkokan saat masuk medium berbeda kecepatan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Slider functionality
+        const slider = document.getElementById('slider');
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        let currentSlide = 0;
+        let isScrolling;
+        
+        // Update indicators on scroll
+        slider.addEventListener('scroll', () => {
+            clearTimeout(isScrolling);
+            
+            isScrolling = setTimeout(() => {
+                const scrollLeft = slider.scrollLeft;
+                const slideWidth = window.innerWidth;
+                const newSlide = Math.round(scrollLeft / slideWidth);
+                
+                if (newSlide !== currentSlide) {
+                    currentSlide = newSlide;
+                    updateIndicators();
+                    
+                    // Init canvas if on slide 5 (index 4)
+                    if (currentSlide === 4) {
+                        setTimeout(drawWave, 100);
+                    }
+                }
+            }, 50);
+        });
+        
+        function updateIndicators() {
+            indicators.forEach((ind, index) => {
+                if (index === currentSlide) {
+                    ind.classList.add('active');
+                } else {
+                    ind.classList.remove('active');
+                }
+            });
+        }
+        
+        function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            slider.scrollTo({
+                left: index * window.innerWidth,
+                behavior: 'smooth'
+            });
+        }
+        
+        function scrollNext() {
+            if (currentSlide < slides.length - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+        
+        function scrollPrev() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+        
+        function scrollToNext() {
+            scrollNext();
+        }
+        
+        // Touch swipe support with better detection
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+        
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        
+        slider.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            // Only handle horizontal swipes (ignore vertical scrolling within slide)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    scrollNext();
+                } else {
+                    scrollPrev();
+                }
+            }
+        }
+        
+        // Modal functions
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModalById(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        function closeModal(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function goToExternal(url) {
+            window.open(url, '_blank');
+        }
+        
+        // Video functions
+        function changeVideo(id, title) {
+            document.getElementById('video-frame').src = `https://www.youtube.com/embed/${id}`;
+            document.getElementById('video-title').innerHTML = `<i class="fas fa-circle-info mr-1"></i> Sedang diputar: ${title}`;
+        }
+        
+        // Code Lab
+        let currentLevel = 1;
+        const levels = [
+            {
+                desc: "Buat gelombang sinus dengan amplitudo 50 dan frekuensi 2!",
+                validate: (code) => code.includes('A = 50') && code.includes('f = 2'),
+                template: `# Parameter gelombang
+A = 50          # Amplitudo
+f = 2           # Frekuensi
+
+# Fungsi gelombang: y = A * sin(f * x)
+def gelombang(x):
+    import math
+    rad = math.radians(x)
+    return A * math.sin(f * rad)
+
+# Generate data
+data = []
+for x in range(0, 361, 10):
+    y = gelombang(x)
+    data.append((x, y))
+
+print(f"Data: {len(data)} titik")
+print(f"Max: {max(y for x,y in data):.1f}")`
+            },
+            {
+                desc: "Ubah amplitudo menjadi 80 dan frekuensi menjadi 3. Lihat perubahannya!",
+                validate: (code) => (code.includes('A = 80') || code.includes('A=80')) && (code.includes('f = 3') || code.includes('f=3')),
+                template: `# Parameter gelombang
+A = 80          # Ubah menjadi 80
+f = 3           # Ubah menjadi 3
+
+def gelombang(x):
+    import math
+    rad = math.radians(x)
+    return A * math.sin(f * rad)
+
+data = []
+for x in range(0, 361, 10):
+    y = gelombang(x)
+    data.append((x, y))
+
+print(f"Amplitudo: {A}, Frekuensi: {f}")
+print(f"Max Y: {max(y for x,y in data):.1f}")`
+            },
+            {
+                desc: "Buat superposisi dua gelombang! y_total = y1 + y2",
+                validate: (code) => code.includes('y1 + y2') || code.includes('y2 + y1'),
+                template: `# Superposisi dua gelombang
+A = 40
+f = 2
+
+def gelombang(x, phase=0):
+    import math
+    rad = math.radians(x)
+    return A * math.sin(f * rad + phase)
+
+data = []
+for x in range(0, 361, 10):
+    y1 = gelombang(x, 0)
+    y2 = gelombang(x, 1)  # beda fase
+    
+    # TODO: Jumlahkan y1 dan y2
+    y_total = y1  # Ubah ini!
+    
+    data.append((x, y_total))
+
+print("Superposisi gelombang")
+print(f"Max amplitude: {max(y for x,y in data):.1f}")`
+            }
+        ];
+        
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const output = document.getElementById('code-output');
+            
+            try {
+                let result = simulatePython(code);
+                output.innerHTML = result;
+                output.classList.remove('text-red-400');
+                output.classList.add('text-gray-300');
+                updateStats(code);
+                drawWave();
+            } catch (e) {
+                output.innerHTML = "Error: " + e.message;
+                output.classList.remove('text-gray-300');
+                output.classList.add('text-red-400');
+            }
+        }
+        
+        function simulatePython(code) {
+            const aMatch = code.match(/A\s*=\s*(\d+)/);
+            const fMatch = code.match(/f\s*=\s*(\d+)/);
+            
+            const A = aMatch ? parseInt(aMatch[1]) : 50;
+            const f = fMatch ? parseInt(fMatch[1]) : 2;
+            
+            let points = [];
+            for (let x = 0; x <= 360; x += 10) {
+                const rad = x * Math.PI / 180;
+                let y;
+                
+                if (code.includes('y1 + y2') || code.includes('y2 + y1')) {
+                    const y1 = A * Math.sin(f * rad);
+                    const y2 = A * Math.sin(f * rad + 1);
+                    y = y1 + y2;
+                } else {
+                    y = A * Math.sin(f * rad);
+                }
+                
+                points.push(y);
+            }
+            
+            const max = Math.max(...points.map(Math.abs));
+            return `Data: ${points.length} titik\nMax: ${max.toFixed(1)}\nAmplitudo: ${A}\nFrekuensi: ${f}`;
+        }
+        
+        function updateStats(code) {
+            const aMatch = code.match(/A\s*=\s*(\d+)/);
+            const fMatch = code.match(/f\s*=\s*(\d+)/);
+            
+            if (aMatch) document.getElementById('stat-a').textContent = aMatch[1];
+            if (fMatch) document.getElementById('stat-f').textContent = fMatch[1];
+        }
+        
+        function drawWave() {
+            const canvas = document.getElementById('wave-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            const code = document.getElementById('code-editor').value;
+            const aMatch = code.match(/A\s*=\s*(\d+)/);
+            const fMatch = code.match(/f\s*=\s*(\d+)/);
+            
+            const A = aMatch ? parseInt(aMatch[1]) : 50;
+            const f = fMatch ? parseInt(fMatch[1]) : 2;
+            
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < canvas.width; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, canvas.height);
+                ctx.stroke();
+            }
+            for (let i = 0; i < canvas.height; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(canvas.width, i);
+                ctx.stroke();
+            }
+            
+            ctx.strokeStyle = '#334155';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const scaleX = canvas.width / 360;
+            const scaleY = (canvas.height / 2 - 20) / 100;
+            
+            for (let x = 0; x <= 360; x += 2) {
+                const rad = x * Math.PI / 180;
+                let y = canvas.height/2;
+                
+                if (code.includes('y1 + y2') || code.includes('y2 + y1')) {
+                    const y1 = A * Math.sin(f * rad);
+                    const y2 = A * Math.sin(f * rad + 1);
+                    y -= (y1 + y2) * scaleY;
+                } else {
+                    y -= A * Math.sin(f * rad) * scaleY;
+                }
+                
+                const plotX = x * scaleX;
+                if (x === 0) ctx.moveTo(plotX, y);
+                else ctx.lineTo(plotX, y);
+            }
+            ctx.stroke();
+            
+            ctx.fillStyle = '#06b6d4';
+            for (let x = 0; x <= 360; x += 30) {
+                const rad = x * Math.PI / 180;
+                let y = canvas.height/2 - (A * Math.sin(f * rad)) * scaleY;
+                
+                if (code.includes('y_total') && (code.includes('y1 + y2'))) {
+                    const y1 = A * Math.sin(f * rad);
+                    const y2 = A * Math.sin(f * rad + 1);
+                    y = canvas.height/2 - (y1 + y2) * scaleY;
+                }
+                
+                ctx.beginPath();
+                ctx.arc(x * scaleX, y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function resetCode() {
+            document.getElementById('code-editor').value = levels[currentLevel - 1].template;
+            document.getElementById('code-output').textContent = "Klik Run untuk menjalankan...";
+            drawWave();
+        }
+        
+        function checkLevel() {
+            const code = document.getElementById('code-editor').value;
+            const level = levels[currentLevel - 1];
+            
+            if (level.validate(code)) {
+                document.getElementById('code-output').innerHTML = 
+                    '<span class="text-green-400"><i class="fas fa-check-circle"></i> Tantangan selesai!</span>';
+            } else {
+                document.getElementById('code-output').innerHTML = 
+                    '<span class="text-yellow-400"><i class="fas fa-exclamation-triangle"></i> Belum sesuai. Cek petunjuk!</span>';
+            }
+        }
+        
+        function nextLevel() {
+            if (currentLevel < 3) {
+                currentLevel++;
+                loadLevel();
+            }
+        }
+        
+        function prevLevel() {
+            if (currentLevel > 1) {
+                currentLevel--;
+                loadLevel();
+            }
+        }
+        
+        function loadLevel() {
+            const level = levels[currentLevel - 1];
+            document.getElementById('task-desc').textContent = level.desc;
+            document.getElementById('code-editor').value = level.template;
+            document.getElementById('level-indicator').textContent = `Level ${currentLevel}/3`;
+            
+            document.getElementById('btn-prev-level').disabled = currentLevel === 1;
+            document.getElementById('btn-prev-level').classList.toggle('opacity-50', currentLevel === 1);
+            
+            document.getElementById('btn-next-level').disabled = currentLevel === 3;
+            document.getElementById('btn-next-level').classList.toggle('opacity-50', currentLevel === 3);
+            
+            document.getElementById('code-output').textContent = "Klik Run untuk menjalankan...";
+        }
+        
+        // Init
+        window.addEventListener('resize', () => {
+            if (currentSlide === 4) drawWave();
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') scrollNext();
+            if (e.key === 'ArrowLeft') scrollPrev();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Phi-R | Gelombang Cahaya</title>
+    <link rel="icon" type="image/png" href="../foto/1.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
+            background: #0f172a;
+        }
+        
+        /* Main Container - Horizontal Scroll Snap */
+        .slider-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .slider-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Each Slide - Full viewport width, scrollable vertically */
+        .slide {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Custom Scrollbar for slide content */
+        .slide::-webkit-scrollbar {
+            width: 4px;
+        }
+        .slide::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .slide::-webkit-scrollbar-thumb {
+            background: rgba(139,92,246,0.3);
+            border-radius: 2px;
+        }
+        
+        /* Glass Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(139,92,246,0.3);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        /* Slide Indicators */
+        .slide-indicators {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(15,23,42,0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #8b5cf6;
+            width: 24px;
+            border-radius: 4px;
+        }
+        
+        /* Navigation Arrows (Desktop) */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 90;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-arrow:hover {
+            background: rgba(139,92,246,0.3);
+        }
+        
+        .nav-arrow.prev { left: 10px; }
+        .nav-arrow.next { right: 10px; }
+        
+        @media (max-width: 768px) {
+            .nav-arrow { display: none; }
+            .slide-indicators {
+                bottom: 10px;
+                padding: 6px 12px;
+            }
+            .indicator {
+                width: 6px;
+                height: 6px;
+            }
+            .indicator.active {
+                width: 18px;
+            }
+        }
+        
+        /* Code Editor */
+        .code-area {
+            font-family: 'Courier New', monospace;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            line-height: 1.6;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+            50% { box-shadow: 0 0 40px rgba(139,92,246,0.6); }
+        }
+        
+        .glow-effect {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        @keyframes prism {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        
+        .prism-effect {
+            animation: prism 3s infinite;
+        }
+        
+        /* Concept Cards */
+        .concept-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .concept-card:active {
+            transform: scale(0.98);
+        }
+        
+        /* Button Styles - Purple/Violet Theme for Light */
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-outline {
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+        
+        /* Swipe hint */
+        .swipe-hint {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            animation: fadeInOut 2s infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Content spacing for scroll */
+        .content-wrapper {
+            min-height: 100%;
+            padding-bottom: 100px;
+        }
+        
+        /* Light ray animation */
+        @keyframes lightRay {
+            0% { opacity: 0.3; transform: translateX(-100%) rotate(45deg); }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .light-ray {
+            position: absolute;
+            width: 200%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(139,92,246,0.8), transparent);
+            animation: lightRay 3s infinite;
+        }
+        
+        /* Interference pattern */
+        .interference-pattern {
+            background: repeating-linear-gradient(
+                90deg,
+                rgba(139,92,246,0.3) 0px,
+                rgba(139,92,246,0.3) 2px,
+                transparent 2px,
+                transparent 10px
+            );
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <!-- Main Slider Container -->
+    <div class="slider-container" id="slider">
+        
+        <!-- SLIDE 1: COVER -->
+        <section class="slide" id="slide-1">
+            <div class="absolute inset-0 z-0 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-violet-900/40 via-slate-900 to-fuchsia-900/40"></div>
+                <div class="light-ray" style="top: 20%;"></div>
+                <div class="light-ray" style="top: 50%; animation-delay: 1s;"></div>
+                <div class="light-ray" style="top: 80%; animation-delay: 2s;"></div>
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=1920&h=1080&fit=crop')] bg-cover bg-center opacity-20"></div>
+            </div>
+            
+            <!-- Header -->
+            <div class="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 md:p-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg prism-effect">
+                        <i class="fas fa-lightbulb text-white text-lg md:text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-sm md:text-lg tracking-tight">LightLearn</h1>
+                        <p class="text-[10px] md:text-xs text-gray-400">Gelombang Cahaya</p>
+                    </div>
+                </div>
+                
+                <div class="flex gap-2 md:gap-3">
+                    <button onclick="openModal('modal-tentang')" class="btn-outline px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i>
+                        <span class="hidden sm:inline">Tentang</span>
+                    </button>
+                    <button onclick="goToExternal('../../dashboard.html')" class="btn-primary px-3 py-2 md:px-4 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                        <i class="fas fa-home"></i>
+                        <span class="hidden sm:inline">Home</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="relative z-10 min-h-full flex flex-col items-center justify-center px-6 text-center content-wrapper">
+                <div class="mb-6 relative">
+                    <div class="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-full bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30 backdrop-blur-xl flex items-center justify-center border border-white/10 animate-float">
+                        <i class="fas fa-prism text-4xl md:text-6xl text-violet-400"></i>
+                    </div>
+                    <div class="absolute -inset-4 bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 rounded-full blur-xl"></div>
+                </div>
+                
+                <h2 class="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-violet-200 to-fuchsia-200 bg-clip-text text-transparent">
+                    GELOMBANG CAHAYA
+                </h2>
+                <p class="text-gray-300 text-sm md:text-lg max-w-md mb-8 px-4">
+                    Eksplorasi sifat gelombang cahaya: interferensi, difraksi, dan polarisasi
+                </p>
+                
+                <button onclick="scrollToNext()" class="btn-primary px-8 py-3 md:px-10 md:py-4 rounded-full font-semibold text-sm md:text-base flex items-center gap-2 glow-effect">
+                    Mulai Belajar
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <div class="swipe-hint">
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Swipe untuk navigasi</span>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 2: PETA KONSEP -->
+        <section class="slide bg-slate-900" id="slide-2">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
+                <div class="max-w-5xl mx-auto">
+                    <div class="flex justify-between items-center mb-6 md:mb-8">
+                        <h2 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                            Peta Konsep
+                        </h2>
+                        <button onclick="openModal('modal-glosarium')" class="btn-outline px-3 py-2 rounded-lg text-xs md:text-sm flex items-center gap-2">
+                            <i class="fas fa-book"></i>
+                            <span class="hidden sm:inline">Glosarium</span>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mb-8 md:mb-10">
+                        <div class="inline-block glass px-6 py-4 md:px-8 md:py-6 rounded-2xl glow-effect">
+                            <i class="fas fa-sun text-2xl md:text-3xl text-violet-400 mb-2"></i>
+                            <h3 class="text-xl md:text-2xl font-bold">GELOMBANG CAHAYA</h3>
+                            <p class="text-xs md:text-sm text-gray-400 mt-1">Gelombang elektromagnetik transversal</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-6">
+                        <!-- Interferensi -->
+                        <div class="concept-card glass p-5 rounded-xl" onclick="openModal('modal-interferensi')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-violet-500/20 flex items-center justify-center mb-3">
+                                <i class="fas fa-adjust text-violet-400 text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Interferensi Cahaya</h4>
+                            <p class="text-xs text-gray-400 mb-2">Superposisi dua gelombang cahaya koheren</p>
+                            <div class="bg-slate-800/50 p-2 rounded font-mono text-[10px] text-violet-300">
+                                Δx = d·sin θ = mλ
+                            </div>
+                        </div>
+                        
+                        <!-- Difraksi -->
+                        <div class="concept-card glass p-5 rounded-xl" onclick="openModal('modal-difraksi')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-fuchsia-500/20 flex items-center justify-center mb-3">
+                                <i class="fas fa-border-all text-fuchsia-400 text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Difraksi Cahaya</h4>
+                            <p class="text-xs text-gray-400 mb-2">Pembelokan cahaya melalui celah sempit</p>
+                            <div class="bg-slate-800/50 p-2 rounded font-mono text-[10px] text-fuchsia-300">
+                                d·sin θ = mλ
+                            </div>
+                        </div>
+                        
+                        <!-- Polarisasi -->
+                        <div class="concept-card glass p-5 rounded-xl" onclick="openModal('modal-polarisasi')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-cyan-500/20 flex items-center justify-center mb-3">
+                                <i class="fas fa-grip-lines-vertical text-cyan-400 text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Polarisasi</h4>
+                            <p class="text-xs text-gray-400 mb-2">Penyeragaman arah getar medan listrik</p>
+                            <div class="bg-slate-800/50 p-2 rounded font-mono text-[10px] text-cyan-300">
+                                I = I₀ cos² θ
+                            </div>
+                        </div>
+                        
+                        <!-- Aplikasi -->
+                        <div class="concept-card glass p-5 rounded-xl" onclick="openModal('modal-aplikasi')">
+                            <div class="w-12 h-12 md:w-14 md:h-14 rounded-full bg-amber-500/20 flex items-center justify-center mb-3">
+                                <i class="fas fa-rocket text-amber-400 text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-base md:text-lg mb-2">Aplikasi</h4>
+                            <p class="text-xs text-gray-400 mb-2">Laser, CD, kacamata 3D, LCD, fotografi</p>
+                            <div class="bg-slate-800/50 p-2 rounded font-mono text-[10px] text-amber-300">
+                                Teknologi Optik Modern
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass p-4 rounded-xl">
+                        <h4 class="font-bold text-sm mb-3 text-violet-400 flex items-center gap-2">
+                            <i class="fas fa-star"></i> Sifat Dasar Gelombang Cahaya
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <div class="text-violet-400 font-bold text-lg">Transversal</div>
+                                <div class="text-[10px] text-gray-500">E ⊥ B ⊥ arah rambat</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <div class="text-fuchsia-400 font-bold text-lg">3×10⁸ m/s</div>
+                                <div class="text-[10px] text-gray-500">Di ruang hampa</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <div class="text-cyan-400 font-bold text-lg">Tidak perlu</div>
+                                <div class="text-[10px] text-gray-500">Medium</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg text-center">
+                                <div class="text-amber-400 font-bold text-lg">Dualisme</div>
+                                <div class="text-[10px] text-gray-500">Gelombang & Partikel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 3: TUJUAN -->
+        <section class="slide bg-slate-900" id="slide-3">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24 flex items-center">
+                <div class="max-w-3xl mx-auto w-full">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                        Tujuan Pembelajaran
+                    </h2>
+                    
+                    <div class="space-y-3 md:space-y-4 mb-8">
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-adjust text-violet-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Menganalisis Interferensi</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Menjelaskan pola interferensi konstruktif dan destruktif pada celah ganda</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-fuchsia-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-border-all text-fuchsia-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Memahami Difraksi</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Menjelaskan pembelokan cahaya dan kriteria celah sempit</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-grip-lines-vertical text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Menerapkan Polarisasi</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Menghitung intensitas cahaya setelah melewati polaroid</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glass p-4 md:p-5 rounded-xl flex items-start gap-3 md:gap-4">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-microscope text-amber-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm md:text-base mb-1">Mengidentifikasi Aplikasi</h4>
+                                <p class="text-gray-400 text-xs md:text-sm">Menyebutkan penerapan sifat gelombang cahaya dalam teknologi</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass p-4 rounded-xl">
+                        <h4 class="font-bold text-sm mb-3 text-center text-violet-400">Capaian Pembelajaran</h4>
+                        <div class="grid grid-cols-3 gap-3 text-center">
+                            <div class="bg-white/5 p-3 rounded-lg">
+                                <div class="text-2xl font-bold text-violet-400">4</div>
+                                <div class="text-[10px] text-gray-500">Sub Materi</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg">
+                                <div class="text-2xl font-bold text-fuchsia-400">3</div>
+                                <div class="text-[10px] text-gray-500">Level Coding</div>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-lg">
+                                <div class="text-2xl font-bold text-cyan-400">∞</div>
+                                <div class="text-[10px] text-gray-500">Aplikasi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 4: VIDEO -->
+        <section class="slide bg-slate-900" id="slide-4">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
+                <div class="max-w-3xl mx-auto">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-4 md:mb-6 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                        Video Pembelajaran
+                    </h2>
+                    
+                    <div class="relative rounded-xl overflow-hidden shadow-2xl bg-black aspect-video mb-4">
+                        <iframe id="video-frame" 
+                                class="w-full h-full"
+                                src="../foto/cahaya.html" 
+                                frameborder="0" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    
+                    <div class="flex flex-wrap justify-center gap-2 mb-4">
+                        <button onclick="changeVideo('Iuv6hY6zsd0', 'Young Double Slit')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-violet-400"></i> Interferensi
+                        </button>
+                        <button onclick="changeVideo('zO3jFKiqmHo', 'Diffraction')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-fuchsia-400"></i> Difraksi
+                        </button>
+                        <button onclick="changeVideo('8XF-11MQGQ0', 'Polarization')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-cyan-400"></i> Polarisasi
+                        </button>
+                        <button onclick="changeVideo('LhvelqQWGt8', 'Wave-Particle')" class="glass px-3 py-2 rounded-lg text-xs md:text-sm hover:bg-white/10 transition-colors flex items-center gap-2">
+                            <i class="fas fa-play text-amber-400"></i> Dualisme
+                        </button>
+                    </div>
+                    
+                    <p id="video-title" class="text-center text-gray-400 text-xs md:text-sm mb-6">
+                        <i class="fas fa-circle-info mr-1"></i> Sedang diputar: Young Double Slit Experiment
+                    </p>
+
+                    <div class="glass p-4 rounded-xl">
+                        <h4 class="font-bold text-sm mb-3 text-violet-400">Poin Penting:</h4>
+                        <ul class="space-y-2 text-xs text-gray-400">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Interferensi membuktikan sifat gelombang cahaya (Young, 1801)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Difraksi terjadi ketika celah mendekati panjang gelombang cahaya</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check text-green-400 mt-0.5"></i>
+                                <span>Polarisasi membuktikan cahaya adalah gelombang transversal</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 5: MATERI RINGKASAN -->
+        <section class="slide bg-slate-900" id="slide-5">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-8 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                        Materi Pokok
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <!-- Interferensi -->
+                        <div class="glass p-4 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-full bg-violet-500/20 flex items-center justify-center">
+                                    <i class="fas fa-adjust text-violet-400"></i>
+                                </div>
+                                <h3 class="font-bold text-base">Interferensi Cahaya</h3>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg font-mono text-xs mb-2">
+                                Celah ganda (Young): d·sin θ = mλ<br>
+                                Jarak antar pita: Δy = λL/d
+                            </div>
+                            <p class="text-xs text-gray-400 mb-2"><strong>Konstruktif:</strong> Δx = mλ (terang)<br>
+                            <strong>Destruktif:</strong> Δx = (m+½)λ (gelap)</p>
+                            <div class="h-2 w-full bg-gradient-to-r from-violet-600 via-white to-violet-600 rounded-full opacity-50"></div>
+                        </div>
+
+                        <!-- Difraksi -->
+                        <div class="glass p-4 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-full bg-fuchsia-500/20 flex items-center justify-center">
+                                    <i class="fas fa-border-all text-fuchsia-400"></i>
+                                </div>
+                                <h3 class="font-bold text-base">Difraksi Cahaya</h3>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg font-mono text-xs mb-2">
+                                Celah tunggal: a·sin θ = mλ<br>
+                                Kisi: d·sin θ = mλ (d = 1/N)
+                            </div>
+                            <p class="text-xs text-gray-400">Maksimum terjadi ketika perbedaan lintasan = mλ. Semakin kecil celah, semakin lebar pola difraksi.</p>
+                        </div>
+
+                        <!-- Polarisasi -->
+                        <div class="glass p-4 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center">
+                                    <i class="fas fa-grip-lines-vertical text-cyan-400"></i>
+                                </div>
+                                <h3 class="font-bold text-base">Polarisasi</h3>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg font-mono text-xs mb-2">
+                                Hukus Malus: I = I₀ cos² θ<br>
+                                Sudut Brewster: tan θₚ = n₂/n₁
+                            </div>
+                            <p class="text-xs text-gray-400">Cahaya tidak terpolarisasi → terpolarisasi linear → terpolarisasi dengan intensitas I = I₀ cos² θ</p>
+                            <div class="flex gap-2 mt-2">
+                                <div class="h-8 w-8 bg-gradient-to-r from-cyan-400 to-transparent rounded"></div>
+                                <div class="h-8 w-8 bg-cyan-400 rounded opacity-50"></div>
+                                <div class="h-8 w-8 bg-cyan-400 rounded opacity-25"></div>
+                            </div>
+                        </div>
+
+                        <!-- Aplikasi -->
+                        <div class="glass p-4 rounded-xl">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+                                    <i class="fas fa-rocket text-amber-400"></i>
+                                </div>
+                                <h3 class="font-bold text-base">Aplikasi Teknologi</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="bg-white/5 p-2 rounded"><strong>Laser:</strong> Interferometer, pemotongan presisi</div>
+                                <div class="bg-white/5 p-2 rounded"><strong>CD/DVD:</strong> Kisi difraksi refleksi</div>
+                                <div class="bg-white/5 p-2 rounded"><strong>LCD:</strong> Polarisasi selektif</div>
+                                <div class="bg-white/5 p-2 rounded"><strong>Kacamata 3D:</strong> Polarisasi ortogonal</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 6: CODING LAB -->
+        <section class="slide bg-slate-900" id="slide-6">
+            <div class="content-wrapper p-4 md:p-6 pt-16 md:pt-20">
+                <div class="max-w-5xl mx-auto">
+                    <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent flex items-center gap-2">
+                        <i class="fas fa-flask"></i> Optics Coding Lab
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
+                        <!-- Left: Code Editor -->
+                        <div class="flex flex-col gap-3">
+                            <div class="glass p-3 rounded-lg">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="bg-violet-500 text-white text-[10px] px-2 py-0.5 rounded font-bold">TANTANGAN</span>
+                                    <span class="text-xs text-gray-400" id="level-indicator">Level 1/3</span>
+                                </div>
+                                <p class="text-xs md:text-sm text-gray-300" id="task-desc">
+                                    Hitung posisi pita terang ke-2 pada interferensi Young! (λ=500nm, d=0.1mm, L=1m)
+                                </p>
+                            </div>
+                            
+                            <div class="glass rounded-lg overflow-hidden flex flex-col" style="height: 250px;">
+                                <div class="bg-slate-800 px-3 py-2 flex justify-between items-center border-b border-slate-700">
+                                    <span class="text-xs text-gray-400">optics.py</span>
+                                    <div class="flex gap-2">
+                                        <button onclick="resetCode()" class="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                        <button onclick="runCode()" class="text-xs px-3 py-1 rounded bg-green-600 hover:bg-green-500 transition-colors font-medium flex items-center gap-1">
+                                            <i class="fas fa-play"></i> Run
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea id="code-editor" class="flex-1 code-area p-3 text-xs outline-none resize-none" spellcheck="false">
+# Interferensi Young
+# y = m * lambda * L / d
+
+lambda_nm = 500    # Panjang gelombang (nm)
+d_mm = 0.1         # Jarak celah (mm)
+L_m = 1            # Jarak ke layar (m)
+m = 2              # Orde pita terang
+
+# Konversi ke meter
+lambda_m = lambda_nm * 1e-9
+d_m = d_mm * 1e-3
+
+# TODO: Hitung posisi pita terang ke-m
+y = 0  # Ubah perhitungan ini!
+
+print(f"Pita terang ke-{m}")
+print(f"Posisi: {y*1000:.2f} mm dari pusat")
+                                </textarea>
+                            </div>
+                            
+                            <div class="glass rounded-lg p-3">
+                                <div class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                                    <i class="fas fa-terminal"></i> Output
+                                </div>
+                                <div id="code-output" class="text-xs font-mono text-gray-300 min-h-[40px]">
+                                    Klik Run untuk menjalankan...
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right: Visualization -->
+                        <div class="flex flex-col gap-3">
+                            <div class="glass rounded-lg p-3 relative" style="height: 250px;">
+                                <canvas id="light-canvas" class="w-full h-full"></canvas>
+                                <div class="absolute top-3 right-3 text-[10px] text-gray-500 bg-slate-900/80 px-2 py-1 rounded">
+                                    Pola Interferensi
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">Posisi</div>
+                                    <div class="text-lg font-bold text-violet-400" id="stat-y">0</div>
+                                    <div class="text-[10px] text-gray-600">mm</div>
+                                </div>
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">Orde</div>
+                                    <div class="text-lg font-bold text-fuchsia-400" id="stat-m">2</div>
+                                    <div class="text-[10px] text-gray-600">m</div>
+                                </div>
+                                <div class="glass p-2 rounded text-center">
+                                    <div class="text-[10px] text-gray-500">λ</div>
+                                    <div class="text-lg font-bold text-cyan-400" id="stat-lambda">500</div>
+                                    <div class="text-[10px] text-gray-600">nm</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between gap-2">
+                                <button onclick="prevLevel()" id="btn-prev-level" class="flex-1 glass py-2 rounded-lg text-xs hover:bg-white/5 transition-colors disabled:opacity-50" disabled>
+                                    <i class="fas fa-chevron-left"></i> Prev
+                                </button>
+                                <button onclick="checkLevel()" class="flex-1 btn-primary py-2 rounded-lg text-xs font-medium">
+                                    Check
+                                </button>
+                                <button onclick="nextLevel()" id="btn-next-level" class="flex-1 glass py-2 rounded-lg text-xs hover:bg-white/5 transition-colors">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+
+                            <div class="glass p-3 rounded-lg">
+                                <h4 class="font-bold text-xs mb-2 text-violet-400">Rumus Penting:</h4>
+                                <ul class="text-[10px] text-gray-400 space-y-1">
+                                    <li>• Interferensi: y = mλL/d</li>
+                                    <li>• Polarisasi: I = I₀ cos² θ</li>
+                                    <li>• Difraksi: a·sin θ = mλ</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SLIDE 7: RANGKUMAN -->
+        <section class="slide bg-slate-900" id="slide-7">
+            <div class="content-wrapper p-4 md:p-8 pt-20 md:pt-24 flex flex-col items-center justify-center min-h-full">
+                <div class="max-w-2xl w-full text-center">
+                    <div class="w-16 h-16 md:w-20 md:h-20 mx-auto rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center mb-4 md:mb-6 animate-float">
+                        <i class="fas fa-prism text-2xl md:text-3xl text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl md:text-3xl font-bold mb-3 md:mb-4 bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+                        Rangkuman
+                    </h2>
+                    
+                    <div class="glass p-4 md:p-6 rounded-xl text-left mb-6 md:mb-8">
+                        <h3 class="font-bold text-base md:text-lg mb-3 text-violet-400">Yang telah dipelajari:</h3>
+                        <ul class="space-y-2 text-xs md:text-sm text-gray-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span><strong>Interferensi:</strong> Superposisi cahaya koheren menghasilkan pola terang-gelap (y = mλL/d)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span><strong>Difraksi:</strong> Pembelokan cahaya pada celah sempit, semakin kecil celah semakin lebar pola</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span><strong>Polarisasi:</strong> Penyeragaman arah getar medan listrik, intensitas berkurang cos²θ</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span><strong>Aplikasi:</strong> Laser, CD/DVD, LCD, kacamata 3D, interferometer</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-check-circle text-green-400 mt-0.5"></i>
+                                <span><strong>Dualisme:</strong> Cahaya memiliki sifat gelombang (interferensi, difraksi) dan partikel (efek fotolistrik)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button onclick="goToSlide(0)" class="glass px-6 py-3 rounded-full text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
+                            <i class="fas fa-redo"></i> Ulangi
+                        </button>
+                        <button onclick="goToExternal('../../test_materi/cahaya.html')" class="btn-primary px-6 py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2">
+                            <i class="fas fa-clipboard-check"></i> Evaluasi
+                        </button>
+                    </div>
+                    
+                    <p class="mt-6 md:mt-8 text-xs text-gray-500">
+                        <i class="fas fa-lightbulb mr-1"></i> Cahaya adalah gelombang elektromagnetik yang membawa energi dan informasi
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Arrows (Desktop) -->
+    <div class="nav-arrow prev" onclick="scrollPrev()">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="nav-arrow next" onclick="scrollNext()">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Slide Indicators -->
+    <div class="slide-indicators">
+        <div class="indicator active" onclick="goToSlide(0)"></div>
+        <div class="indicator" onclick="goToSlide(1)"></div>
+        <div class="indicator" onclick="goToSlide(2)"></div>
+        <div class="indicator" onclick="goToSlide(3)"></div>
+        <div class="indicator" onclick="goToSlide(4)"></div>
+        <div class="indicator" onclick="goToSlide(5)"></div>
+        <div class="indicator" onclick="goToSlide(6)"></div>
+    </div>
+
+    <!-- MODALS -->
+    <div id="modal-tentang" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-info-circle text-violet-400"></i> Tentang Modul
+                </h3>
+                <button onclick="closeModalById('modal-tentang')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-sm text-gray-300">
+                <p>Modul <strong>LightLearn</strong> mengeksplorasi sifat gelombang cahaya melalui fenomena optik klasik dan modern.</p>
+                
+                <div class="glass p-3 rounded-lg space-y-2">
+                    <h4 class="font-semibold text-white text-sm">Topik Utama:</h4>
+                    <ul class="space-y-1 text-xs">
+                        <li>• Interferensi: Superposisi gelombang cahaya</li>
+                        <li>• Difraksi: Pembelokan pada celah sempit</li>
+                        <li>• Polarisasi: Seleksi arah getar</li>
+                        <li>• Aplikasi teknologi optik modern</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-5 pt-4 border-t border-gray-700">
+                <a href="https://wa.me/6283182514910" target="_blank" 
+                   class="w-full bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg flex items-center justify-center gap-2 transition-colors font-medium">
+                    <i class="fab fa-whatsapp text-xl"></i>
+                    Chat Admin WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-glosarium" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5 md:p-6" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-book text-violet-400"></i> Glosarium
+                </h3>
+                <button onclick="closeModalById('modal-glosarium')" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-violet-400 text-sm mb-1">Koheren</h4>
+                    <p class="text-xs text-gray-300">Dua gelombang memiliki frekuensi sama dan beda fase tetap.</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-fuchsia-400 text-sm mb-1">Celah Ganda (Double Slit)</h4>
+                    <p class="text-xs text-gray-300">Eksperimen Young: dua celah sempit menghasilkan pola interferensi.</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-cyan-400 text-sm mb-1">Kisi Difraksi</h4>
+                    <p class="text-xs text-gray-300">Banyak celah berjarak rapat (N garis/mm) untuk memisahkan warna.</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-amber-400 text-sm mb-1">Polaroid</h4>
+                    <p class="text-xs text-gray-300">Material yang hanya melewatkan getaran tertentu (polarisator/analisator).</p>
+                </div>
+                
+                <div class="glass p-3 rounded-lg">
+                    <h4 class="font-bold text-green-400 text-sm mb-1">Sudut Brewster</h4>
+                    <p class="text-xs text-gray-300">Sudut datang di mana cahaya terpolarisasi sempurna saat pemantulan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modals -->
+    <div id="modal-interferensi" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-interferensi')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-violet-400">Interferensi Cahaya</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <p class="text-xs">Terjadi ketika dua gelombang cahaya koheren bertemu.</p>
+                <div class="bg-slate-800 p-2 rounded font-mono text-xs">
+                    Terang: Δx = mλ<br>
+                    Gelap: Δx = (m+½)λ
+                </div>
+                <p class="text-xs"><strong>Eksperimen Young (1801):</strong> Membuktikan sifat gelombang cahaya.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-difraksi" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-difraksi')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-fuchsia-400">Difraksi Cahaya</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <p class="text-xs">Pembelokan cahaya saat melewati celah yang ukurannya mendekati λ.</p>
+                <div class="bg-slate-800 p-2 rounded font-mono text-xs">
+                    a·sin θ = mλ<br>
+                    θ ≈ y/L (untuk sudut kecil)
+                </div>
+                <p class="text-xs"><strong>Kriteria:</strong> Difraksi signifikan ketika a ≈ λ</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-polarisasi" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-polarisasi')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-cyan-400">Polarisasi</h3>
+            <div class="space-y-3 text-sm text-gray-300">
+                <p class="text-xs">Penyeragaman arah getar medan listrik (E) gelombang EM.</p>
+                <div class="bg-slate-800 p-2 rounded font-mono text-xs">
+                    I = I₀ cos² θ (Hukum Malus)
+                </div>
+                <p class="text-xs"><strong>Jenis:</strong> Linear, sirkular, eliptikal</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-aplikasi" class="modal" onclick="closeModal(event)">
+        <div class="modal-content p-5" onclick="event.stopPropagation()">
+            <button onclick="closeModalById('modal-aplikasi')" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold mb-3 text-amber-400">Aplikasi Gelombang Cahaya</h3>
+            <div class="space-y-2 text-sm text-gray-300">
+                <div class="glass p-2 rounded">
+                    <strong class="text-xs">Laser:</strong>
+                    <p class="text-[10px]">Pemotongan presisi, pembacaan barcode, komunikasi fiber optik</p>
+                </div>
+                <div class="glass p-2 rounded">
+                    <strong class="text-xs">CD/DVD:</strong>
+                    <p class="text-[10px]">Kisi difraksi refleksi menyimpan data digital</p>
+                </div>
+                <div class="glass p-2 rounded">
+                    <strong class="text-xs">LCD:</strong>
+                    <p class="text-[10px]">Kristal cair yang memutar bidang polarisasi</p>
+                </div>
+                <div class="glass p-2 rounded">
+                    <strong class="text-xs">Kacamata 3D:</strong>
+                    <p class="text-[10px]">Polarisasi ortogonal untuk mata kiri dan kanan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Slider functionality
+        const slider = document.getElementById('slider');
+        const indicators = document.querySelectorAll('.indicator');
+        let currentSlide = 0;
+        let isScrolling;
+        
+        slider.addEventListener('scroll', () => {
+            clearTimeout(isScrolling);
+            isScrolling = setTimeout(() => {
+                const scrollLeft = slider.scrollLeft;
+                const slideWidth = window.innerWidth;
+                const newSlide = Math.round(scrollLeft / slideWidth);
+                
+                if (newSlide !== currentSlide) {
+                    currentSlide = newSlide;
+                    updateIndicators();
+                    if (currentSlide === 5) setTimeout(drawInterference, 100);
+                }
+            }, 50);
+        });
+        
+        function updateIndicators() {
+            indicators.forEach((ind, index) => {
+                if (index === currentSlide) ind.classList.add('active');
+                else ind.classList.remove('active');
+            });
+        }
+        
+        function goToSlide(index) {
+            if (index < 0 || index >= 7) return;
+            slider.scrollTo({ left: index * window.innerWidth, behavior: 'smooth' });
+        }
+        
+        function scrollNext() {
+            if (currentSlide < 6) goToSlide(currentSlide + 1);
+        }
+        
+        function scrollPrev() {
+            if (currentSlide > 0) goToSlide(currentSlide - 1);
+        }
+        
+        function scrollToNext() {
+            scrollNext();
+        }
+        
+        // Touch support
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+        
+        slider.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0) scrollNext();
+                else scrollPrev();
+            }
+        }, { passive: true });
+        
+        // Modal functions
+        function openModal(id) {
+            document.getElementById(id).classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModalById(id) {
+            document.getElementById(id).classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        function closeModal(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function goToExternal(url) {
+            window.open(url, '_blank');
+        }
+        
+        function changeVideo(id, title) {
+            document.getElementById('video-frame').src = `https://www.youtube.com/embed/${id}`;
+            document.getElementById('video-title').innerHTML = `<i class="fas fa-circle-info mr-1"></i> Sedang diputar: ${title}`;
+        }
+        
+        // Code Lab - Optics
+        let currentLevel = 1;
+        const levels = [
+            {
+                desc: "Hitung posisi pita terang ke-2 pada interferensi Young! (λ=500nm, d=0.1mm, L=1m)",
+                validate: (code) => code.includes('m * lambda') || code.includes('m*lambda') || code.includes('0.01') || code.includes('10'),
+                template: `# Interferensi Young
+# y = m * lambda * L / d
+
+lambda_nm = 500    # Panjang gelombang (nm)
+d_mm = 0.1         # Jarak celah (mm)
+L_m = 1            # Jarak ke layar (m)
+m = 2              # Orde pita terang
+
+# Konversi ke meter
+lambda_m = lambda_nm * 1e-9
+d_m = d_mm * 1e-3
+
+# TODO: Hitung posisi pita terang ke-m
+y = 0  # Ubah perhitungan ini!
+
+print(f"Pita terang ke-{m}")
+print(f"Posisi: {y*1000:.2f} mm dari pusat")`
+            },
+            {
+                desc: "Hitung intensitas cahaya setelah melewati polaroid kedua dengan sudut 60°!",
+                validate: (code) => code.includes('cos') && code.includes('**2') || code.includes('0.25') || code.includes('I0/4'),
+                template: `# Polarisasi - Hukum Malus
+# I = I0 * cos² θ
+
+I0 = 100    # Intensitas awal (%)
+theta = 60  # Sudut polaroid (derajat)
+
+import math
+
+# TODO: Hitung I = I0 * cos²(theta)
+I = I0  # Ubah perhitungan ini!
+
+print(f"Intensitas awal: {I0}%")
+print(f"Sudut: {theta}°")
+print(f"Intensitas akhir: {I:.2f}%")`
+            },
+            {
+                desc: "Hitung sudut difraksi minimum orde-1 untuk celah 0.02 mm dan λ=600 nm!",
+                validate: (code) => code.includes('asin') || code.includes('arcsin') || code.includes('1.71') || code.includes('1.72'),
+                template: `# Difraksi Celah Tunggal
+# a * sin θ = m * λ
+
+a_mm = 0.02     # Lebar celah (mm)
+lambda_nm = 600 # Panjang gelombang (nm)
+m = 1           # Orde minimum
+
+import math
+
+a_m = a_mm * 1e-3
+lambda_m = lambda_nm * 1e-9
+
+# TODO: Hitung sin_theta = m * lambda / a, lalu θ = asin(sin_theta)
+theta_deg = 0  # Ubah perhitungan ini!
+
+print(f"Celah: {a_mm} mm")
+print(f"λ: {lambda_nm} nm")
+print(f"Sudut difraksi: {theta_deg:.2f}°")`
+            }
+        ];
+        
+        function runCode() {
+            const code = document.getElementById('code-editor').value;
+            const output = document.getElementById('code-output');
+            
+            try {
+                let result = simulateOpticsPython(code);
+                output.innerHTML = result;
+                output.classList.remove('text-red-400');
+                output.classList.add('text-gray-300');
+                updateOpticsStats(code);
+                drawInterference();
+            } catch (e) {
+                output.innerHTML = "Error: " + e.message;
+                output.classList.remove('text-gray-300');
+                output.classList.add('text-red-400');
+            }
+        }
+        
+        function simulateOpticsPython(code) {
+            // Level 1: Interferensi Young
+            if (currentLevel === 1) {
+                const mMatch = code.match(/m\s*=\s*(\d+)/);
+                const m = mMatch ? parseInt(mMatch[1]) : 2;
+                
+                if (code.includes('m * lambda') || code.includes('m*lambda')) {
+                    const y_mm = (m * 500e-9 * 1 / 0.1e-3) * 1000;
+                    return `Pita terang ke-${m}\nPosisi: ${y_mm.toFixed(2)} mm dari pusat\n✓ Perhitungan benar!`;
+                }
+                return `Pita terang ke-${m}\nPosisi: 0.00 mm dari pusat\n⚠ Gunakan rumus y = m * λ * L / d`;
+            }
+            
+            // Level 2: Polarisasi
+            if (currentLevel === 2) {
+                if ((code.includes('cos') && code.includes('**2')) || code.includes('cos(')) {
+                    const I = 100 * Math.pow(Math.cos(60 * Math.PI / 180), 2);
+                    return `Intensitas awal: 100%\nSudut: 60°\nIntensitas akhir: ${I.toFixed(2)}%\n✓ Hukum Malus diterapkan!`;
+                }
+                return `Intensitas awal: 100%\nSudut: 60°\nIntensitas akhir: 100%\n⚠ Gunakan rumus I = I0 * cos²(θ)`;
+            }
+            
+            // Level 3: Difraksi
+            if (currentLevel === 3) {
+                if (code.includes('asin') || code.includes('arcsin')) {
+                    const theta = Math.asin(600e-9 / 0.02e-3) * 180 / Math.PI;
+                    return `Celah: 0.02 mm\nλ: 600 nm\nSudut difraksi: ${theta.toFixed(2)}°\n✓ Perhitungan sudut benar!`;
+                }
+                return `Celah: 0.02 mm\nλ: 600 nm\nSudut difraksi: 0.00°\n⚠ Gunakan θ = arcsin(mλ/a)`;
+            }
+            
+            return "Output tidak valid";
+        }
+        
+        function updateOpticsStats(code) {
+            if (currentLevel === 1) {
+                const mMatch = code.match(/m\s*=\s*(\d+)/);
+                if (mMatch) document.getElementById('stat-m').textContent = mMatch[1];
+                
+                if (code.includes('m * lambda') || code.includes('m*lambda')) {
+                    const m = parseInt(mMatch[1]);
+                    const y = (m * 500e-9 * 1 / 0.1e-3) * 1000;
+                    document.getElementById('stat-y').textContent = y.toFixed(1);
+                }
+            }
+        }
+        
+        function drawInterference() {
+            const canvas = document.getElementById('light-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.parentElement.getBoundingClientRect();
+            
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            // Background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const code = document.getElementById('code-editor').value;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Draw interference pattern
+            const numFringes = 5;
+            const fringeWidth = canvas.width / (numFringes * 2);
+            
+            for (let i = -numFringes; i <= numFringes; i++) {
+                const intensity = Math.pow(Math.cos(i * Math.PI / 2), 2);
+                const width = fringeWidth * (0.5 + intensity);
+                const x = centerX + i * fringeWidth * 2;
+                
+                // Gradient for each fringe
+                const gradient = ctx.createRadialGradient(x, centerY, 0, x, centerY, width);
+                
+                if (currentLevel === 1) {
+                    // Interference - violet/bright
+                    gradient.addColorStop(0, `rgba(139, 92, 246, ${intensity})`);
+                    gradient.addColorStop(1, 'transparent');
+                } else if (currentLevel === 2) {
+                    // Polarization - cyan gradient
+                    gradient.addColorStop(0, `rgba(6, 182, 212, ${intensity * 0.7})`);
+                    gradient.addColorStop(1, 'transparent');
+                } else {
+                    // Diffraction - fuchsia spread
+                    gradient.addColorStop(0, `rgba(217, 70, 239, ${intensity})`);
+                    gradient.addColorStop(1, 'transparent');
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x - width, 0, width * 2, canvas.height);
+            }
+            
+            // Draw slits (top)
+            ctx.fillStyle = '#8b5cf6';
+            if (currentLevel === 1) {
+                // Double slit
+                ctx.fillRect(centerX - 20, 10, 5, 15);
+                ctx.fillRect(centerX + 15, 10, 5, 15);
+            } else {
+                // Single slit or polarization filter
+                ctx.fillRect(centerX - 10, 10, 20, 15);
+            }
+            
+            // Labels
+            ctx.fillStyle = '#fff';
+            ctx.font = '10px Inter';
+            ctx.fillText('Sumber', centerX - 20, 35);
+        }
+        
+        function resetCode() {
+            document.getElementById('code-editor').value = levels[currentLevel - 1].template;
+            document.getElementById('code-output').textContent = "Klik Run untuk menjalankan...";
+            drawInterference();
+        }
+        
+        function checkLevel() {
+            const code = document.getElementById('code-editor').value;
+            const level = levels[currentLevel - 1];
+            
+            if (level.validate(code)) {
+                document.getElementById('code-output').innerHTML = 
+                    '<span class="text-green-400"><i class="fas fa-check-circle"></i> Tantangan selesai!</span>';
+            } else {
+                document.getElementById('code-output').innerHTML = 
+                    '<span class="text-yellow-400"><i class="fas fa-exclamation-triangle"></i> Belum sesuai. Cek petunjuk!</span>';
+            }
+        }
+        
+        function nextLevel() {
+            if (currentLevel < 3) {
+                currentLevel++;
+                loadLevel();
+            }
+        }
+        
+        function prevLevel() {
+            if (currentLevel > 1) {
+                currentLevel--;
+                loadLevel();
+            }
+        }
+        
+        function loadLevel() {
+            const level = levels[currentLevel - 1];
+            document.getElementById('task-desc').textContent = level.desc;
+            document.getElementById('code-editor').value = level.template;
+            document.getElementById('level-indicator').textContent = `Level ${currentLevel}/3`;
+            
+            document.getElementById('btn-prev-level').disabled = currentLevel === 1;
+            document.getElementById('btn-prev-level').classList.toggle('opacity-50', currentLevel === 1);
+            
+            document.getElementById('btn-next-level').disabled = currentLevel === 3;
+            document.getElementById('btn-next-level').classList.toggle('opacity-50', currentLevel === 3);
+            
+            document.getElementById('code-output').textContent = "Klik Run untuk menjalankan...";
+        }
+        
+        // Init
+        window.addEventListener('resize', () => {
+            if (currentSlide === 5) drawInterference();
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') scrollNext();
+            if (e.key === 'ArrowLeft') scrollPrev();
+        });
+    </script>
+</body>
+</html>
