@@ -1,5 +1,5 @@
-"Pengembangan Media Interaktif Fisika Berbasis Aptitude-Treatment Interaction"
-"dan Trait-Treatment Interaction Terintegrasi Coding Terhadap Computational Thinking Siswa SMA/MA"
+"Pengembangan Media Interaktif Fisika"
+"Terintegrasi Coding Terhadap Computational Thinking Siswa SMA/MA"
 
 
 
