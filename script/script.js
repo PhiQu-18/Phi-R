@@ -81,7 +81,7 @@ $(document).ready(function() {
                 // LOGIKA ADAPTIF (Poin 2):
                 // Jika skor TTI masih 0 atau "0", lempar ke tes kemandirian
                 if (parseInt(res.skor_tti) === 0 || res.skor_tti === "0") {
-                    alert("Selamat datang " + res.nama + "! Silakan isi Tes Kemandirian (TTI) terlebih dahulu.");
+                    alert("Selamat datang " + res.nama + "! Silakan isi Tes Kemandirian (Trait) terlebih dahulu.");
                     window.location.href = "halaman_tti.html";
                 } else {
                     window.location.href = "dashboard.html";
