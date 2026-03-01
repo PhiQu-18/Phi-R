@@ -53,7 +53,7 @@ const questions = [
     },
     {
         pilar: "Evaluasi",
-        image: "https://via.placeholder.com/600x300?text=Interferometry+Laser+Pattern",
+        image: "../foto/25.webp",
         q: "Layar LCD (Liquid Crystal Display) menggunakan prinsip polarisasi cahaya. Cahaya dari backlight melewati polarisator pertama, kemudian melalui lapisan kristal cair yang bisa diputar arah polarisasinya oleh arus listrik, dan akhirnya melewati polarisator kedua (analyzer) yang arahnya tegak lurus dengan polarisator pertama. Bagaimana prosedur algoritma untuk membuat piksel layar menjadi gelap (tidak ada cahaya yang keluar dari analyzer)?",
         opt: [
             "Mematikan arus listrik sehingga kristal cair tidak memutar cahaya",
