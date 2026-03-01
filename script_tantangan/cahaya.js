@@ -1,68 +1,68 @@
 const questions = [
     {
         pilar: "Abstraksi",
-        image: "https://via.placeholder.com/600x300?text=Young+Double+Slit+Experiment",
-        q: "(Interferensi) Dalam model matematika y = (λL)/d, variabel mana yang harus diabaikan (Abstraksi) karena tidak mempengaruhi hasil perhitungan fisis panjang gelombang?",
+        image: "../foto/21.jfif",
+        q: "Dalam percobaan celah ganda Young, seberkas cahaya monokromatik dilewatkan pada dua celah sempit, menghasilkan pola garis terang dan gelap pada layar di belakang celah. Untuk menganalisis pola interferensi tersebut, informasi manakah yang paling relevan (diambil inti konsepnya)?",
         opt: [
-            "Jarak antar celah (d)",
-            "Jarak celah ke layar (L)",
-            "Warna cat pada dinding laboratorium",
-            "Panjang gelombang cahaya (λ)",
-            "Orde interferensi (n)"
+            "Warna intensitas cahaya yang digunakan",
+            "Bahan layar yang digunakan untuk menangkap pola cahaya",
+            "Jarak antar celah dan panjang gelombang cahaya",
+            "Bentuk fisik lampu sumber cahaya",
+            "Suhu ruangan tempat percobaan dilakukan"
         ],
         ans: 2
     },
     {
         pilar: "Dekomposisi",
-        image: "https://via.placeholder.com/600x300?text=Light+Diffraction+on+CD",
-        q: "(Difraksi) Untuk menganalisis mengapa keping CD menghasilkan pola pelangi, komponen mana yang harus kita urai (Dekomposisi) sebagai variabel utama?",
+        image: "../foto/22.jpg",
+        q: "Sebuah kisi difraksi memiliki 500 garis per milimeter. Kisi tersebut disinari cahaya monokromatik dan menghasilkan spektrum garis terang pada layar. Untuk menghitung jarak antar celah (d) yang akan digunakan dalam rumus difraksi kisi d sin θ = mλ, langkah manakah yang tepat?",
         opt: [
-            "Harga keping CD dan merek pemutarnya",
-            "Bahan plastik dan berat keping CD",
-            "Hubungan antara λ, konstanta kisi (d), dan sudut difraksi (θ)",
-            "Kapasitas penyimpanan data (GB)",
-            "Durasi lagu dalam keping tersebut"
+            "Mengubah satuan 500 garis/mm menjadi 500.000 garis/m, lalu d= 1/(jumlah garis per meter)",
+            "Mengalikan jumlah garis dengan panjang gelombang",
+            "Membagi 1 mm dengan 500",
+            "Menghitung sudut θ terlebih dahulu",
+            "Mmebagi panjang gelombang dengan jumlah garis"
         ],
-        ans: 2
+        ans: 0
     },
     {
         pilar: "Pola",
-        image: "https://via.placeholder.com/600x300?text=Malus+Law+Polarization",
-        q: "(Polarisasi) Jika pola terang maksimum terjadi saat dua polaroid sejajar (0°) dan gelap total saat tegak lurus (90°), apa yang terjadi jika sudutnya 45° berdasarkan Hukum Malus?",
+        image: "../foto/23.jpg",
+        q: "Cahaya terpolarisasi dilewatkan pada sebuah analyzer. Jika sumbu transmisi analyzer diputar sehingga sejajar (0°) dengan arah polarisasi cahaya, bagaimana intensitas cahaya yang keluar? Berdasarkan hukum Malus I = I0 cos² θ, intensitas cahaya yang keluar adalah...",
         opt: [
-            "Cahaya akan hilang sepenuhnya",
-            "Intensitas menjadi setengah dari maksimum (1/2 Imax)",
-            "Intensitas menjadi dua kali lipat",
-            "Cahaya berubah warna menjadi biru",
-            "Intensitas tidak berubah sama sekali"
+            "Maksimum",
+            "Minimum",
+            "Nol",
+            "Setengah dari intensitas awal",
+            "Sama dengan intensitas awal dibagi empat"
         ],
-        ans: 1
+        ans: 0
     },
     {
         pilar: "Algoritma",
-        image: "https://via.placeholder.com/600x300?text=Optical+Fiber+Internal+Reflection",
-        q: "(Aplikasi) Manakah urutan logika (Algoritma) yang paling tepat agar cahaya dapat merambat sempurna di dalam serat optik tanpa bocor keluar?",
+        image: "../foto/24.jfif",
+        q: "Sinar monokromatik dengan panjang gelombang (λ) diarahkan tegak lurus pada kisi difraksi dan menghasilkan garis terang orde pertama (m = 1) pada sudut θ. Manakah yang digunakan untuk mencari konstanta kisi (d) berdasarkan rumus difraksi kisi d sin θ = mλ?",
         opt: [
-            "Medium rapat ke kurang rapat; Sudut datang < Sudut kritis",
-            "Medium kurang rapat ke rapat; Sudut datang > Sudut kritis",
-            "Medium rapat ke kurang rapat; Sudut datang > Sudut kritis",
-            "Udara ke kaca; Sudut datang harus 0°",
-            "Cahaya harus dipadamkan sebelum masuk kabel"
+            "Menghitung d = sin θ/λ",
+            "Menghitung d = λ/ sin θ",
+            "Menghitung d = λ sinθ",
+            "Menghitung d = λ/ tan θ",
+            "Menghitung d = λ tanθ"
         ],
-        ans: 2
+        ans: 1
     },
     {
         pilar: "Evaluasi",
         image: "https://via.placeholder.com/600x300?text=Interferometry+Laser+Pattern",
-        q: "(Logika) Jika hasil pengamatan interferometri menunjukkan pola garis terang menjadi lebih rapat (jarak y mengecil), kesimpulan manakah yang benar?",
+        q: "Layar LCD (Liquid Crystal Display) menggunakan prinsip polarisasi cahaya. Cahaya dari backlight melewati polarisator pertama, kemudian melalui lapisan kristal cair yang bisa diputar arah polarisasinya oleh arus listrik, dan akhirnya melewati polarisator kedua (analyzer) yang arahnya tegak lurus dengan polarisator pertama. Bagaimana prosedur algoritma untuk membuat piksel layar menjadi gelap (tidak ada cahaya yang keluar dari analyzer)?",
         opt: [
-            "Jarak celah ke layar (L) diperbesar",
-            "Jarak antar celah (d) diperbesar",
-            "Panjang gelombang (λ) menjadi lebih besar",
-            "Intensitas laser diredupkan",
-            "Layar pengamatan dipindahkan menjauh"
+            "Mematikan arus listrik sehingga kristal cair tidak memutar cahaya",
+            "Menyalakan arus listrik sehingga kristal cair tidak memutar cahaya",
+            "Mengatur arus listrik agar kristal cair memutar arah polarisasi cahaya sebesar 90°",
+            "Melepas polarisator kedua dari layar LCD",
+            "Mengatur arus listrik agar kristal cair tidak memutar arah polarisasi cahaya, sehingga cahaya diblokir oleh polarisator kedua"
         ],
-        ans: 1
+        ans: 4
     }
 ];
 

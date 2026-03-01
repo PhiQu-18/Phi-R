@@ -8,68 +8,68 @@
 const questions = [
     {
         pilar: "abstraksi", // Soal 1
-        image: "img/gelombang_jenis.png",
-        text: "Pilar Abstraksi: Berdasarkan simulasi, ciri utama apa yang paling tepat untuk membedakan Gelombang Tali dan Gelombang Pegas?",
+        image: "../foto/11.webp",
+        text: "Diluar angkasa yang hampa udara (tidak ada oksigen/gas), sebuah ledakan besar terjadi. Kamu bisa melihat kilatan cahaya apinya, tetapi kamu tidak bisa mendengar suara ledakannya. Jika kita ingin tahu alasan mengapa suara tidak terdengar, informasi mana yang paling penting untuk kita perhatikan?",
         options: [
-            "Warna Gelombang yang dihasilkan", 
-            "Arah Getar partikel terhadap Arah Rambatnya", 
-            "Panjang Tali dan jenis pegas yang digunakan", 
-            "Jenis Bahan pembuat medium rambatan", 
-            "Amplitudo Maksimum saat diberikan gangguan"
+            "Warna api dari ledakan tersebut", 
+            "Jarak kita dari ledakan tersebut", 
+            "Tidak adanya udara udara sebagai perantara suara", 
+            "Bentuk benda yang meledak", 
+            "Nama astronot yang melihat ledakan"
         ],
-        answer: 1 
+        answer: 2 
     },
     {
         pilar: "pola", // Soal 2
-        image: "img/superposisi.png",
-        text: "Pilar Pengenalan Pola: Jika Bukit A (2 unit) bertemu Bukit B (2 unit) di titik yang sama, tingginya menjadi 4 unit. Pola logika apa ini?",
+        image: "../foto/12.jpg",
+        text: "Kamu memperhatikan tetesan air yang jatuh kedalam kolam setiap 2 detik sekali. Setiap tetesan menciptakan lingkaran gelombang yang bergerak menjauh dari pusat. Kamu mencatat bahwa jarak antara satu puncak gelombang dengan puncak berikutnya selalu sama, yaitu 20 cm. Apa yang bisa kamu prediksi jika tetesan air jatuh lebih cepat (misalnya setiap 1 detik sekali)?",
         options: [
-            "Pengurangan (Interferensi Destruktif)", 
-            "Perkalian (Amplifikasi Sinyal Berlipat)", 
-            "Penjumlahan (Interferensi Konstruktif)", 
-            "Pembagian (Reduksi Simpangan Gelombang)", 
-            "Eksponensial (Lonjakan Energi Mendadak)"
+            "Warna air kolam akan berubah menjadi lebih gelap", 
+            "Jarak antar puncak gelombang akan berubah karena polanya mengikuti kecepatan tetesan", 
+            "Jarak antar puncak gelombang akan tetap 20 cm", 
+            "Gelombang akan berhenti muncul sama sekali", 
+            "Kedalaman kolam akan otomatis berubah"
         ],
-        answer: 2 
+        answer: 1
     },
     {
         pilar: "dekomposisi", // Soal 3
-        image: "img/beda_fase.png",
-        text: "Pilar Dekomposisi: Untuk menentukan beda fase antara dua gelombang yang berbeda waktu mulainya, bagian mana yang harus kamu bandingkan?",
+        image: "../foto/13.JPG",
+        text: "Kamu melihat sebuah gelombang tali yang sedang bergerak. Kamu ingin menghitung kecepatan gelombang tali tersebut, tetapi kamu tidak tahu rumusnya. Langkah kecil apa saja yang harus kamu cari terlebih dahulu agar bisa menghitung kecepatannya?",
         options: [
-            "Warna puncak masing-masing gelombang", 
-            "Jarak horizontal antara dua puncak yang bersesuaian", 
-            "Tinggi maksimum (amplitudo) masing-masing", 
-            "Kecepatan getar tangan saat menggerakkan medium", 
-            "Luas penampang medium rambatan gelombang"
+            "Mengukur jarak satu gelombang (Panjang) dan waktu untuk satu getaran", 
+            "Mencari tahu warna tali dan siapa yang memegang tali tersebut", 
+            "Langsung menebak angka kecepatannya tanpa melihat tali tersebut", 
+            "Menghitung jumlah debu yang menempel pada tali tersebut", 
+            "Menunggu sampai tali tersebut berhenti bergerak sepenuhnya"
         ],
-        answer: 1 
+        answer: 0 
     },
     {
         pilar: "algoritma", // Soal 4
-        image: "img/pantulan.png",
-        text: "Pilar Algoritma: JIKA gelombang menabrak ujung tetap, MAKA gelombang akan dipantulkan dengan fase terbalik. Manakah visual yang sesuai dengan aturan ini?",
+        image: "../foto/14.jpg",
+        text: "Kamu ditugaskan untuk melihat apakah gelombang tersebut saling menghilangkan (destruktif) pada permukaan air kolam menggunakan dua buah batu. Bagaimana langkah-langkah yang harus kamu lakukan untuk menghasilkan gelombang tersebut?",
         options: [
-            "Bukit gelombang tetap dipantulkan menjadi bukit", 
-            "Gelombang menembus dinding tanpa ada pantulan", 
-            "Bukit gelombang dipantulkan menjadi lembah", 
-            "Gelombang berhenti seketika di titik pantul", 
-            "Gelombang berbalik arah tanpa ada perubahan bentuk"
+            "Melempar dua batu secara bersamaan ketempat yang sama", 
+            "Melempar dua batu ditempat yang berbeda dengan kekuatan yang berbeda", 
+            "Melempar satu batu, menunggu air tenang, lalu melempar batu kedua", 
+            "Melempar dua batu secara bergantian dengan jeda waktu yang lama", 
+            "Melempar dua batu secara bersamaan ditempat yang berbeda, lalu mengatur waktu jatuhnya agar puncak gelombang A bertemu lembah gelombang B"
         ],
-        answer: 2 
+        answer: 4 
     },
     {
         pilar: "pola", // Soal 5
-        image: "img/v_f_lambda.png",
-        text: "Pilar Pengenalan Pola: Dalam simulasi, saat Frekuensi dinaikkan namun Kecepatan tetap, pola apa yang terjadi pada Panjang Gelombang?",
+        image: "../foto/15.jfif",
+        text: "Kamu memegang ujung tali dan menggerakkan tanganmu ke atas dan ke bawah dengan sangat cepat. Tali akan membentuk banyak gundukan kecil. Lalu kamu menggerakkan tanganmu keatas dan kebawah dengan sangat lambat. Tali akan membentuk gundukan yang besar dan sedikit. Apa yang dapat kamu simpulkan jika kamu ingin membuat gundukan gelombang yang paling kecil dan rapat?",
         options: [
-            "Panjang gelombang akan terlihat semakin besar", 
-            "Panjang gelombang akan terlihat semakin mengecil", 
-            "Panjang gelombang tidak mengalami perubahan", 
-            "Gelombang menghilang secara perlahan dari layar", 
-            "Panjang gelombang menjadi tidak terhingga"
+            "Menggerakkan tangan dengan sangat lambat", 
+            "Menggerakkan tangan ke kiri dan ke kanan", 
+            "Melepaskan tali dari pegangan", 
+            "Menggerakkan tangan dengan sangat cepat", 
+            "Mengganti tali dengan rantai besi"
         ],
-        answer: 1 
+        answer: 3 
     }
 ];
 

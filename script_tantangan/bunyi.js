@@ -1,68 +1,68 @@
 const questions = [
     {
         pilar: "abstraksi",
-        image: "https://via.placeholder.com/600x300?text=Gambar+Partikel+Udara+Longitudinal",
-        q: "(Cepat Rambat Bunyi) Saat memodelkan perambatan bunyi di udara, detail mana yang harus diabaikan (Abstraksi) agar kita fokus pada perpindahan energinya?",
+        image: "../foto/16.png",
+        q: "Dua orang temanmu, Andi dan Budi berteriak dengan kekuatan yang sama. Andi berteriak tepat didepanmu, sedangkan budi berteriak dari jarak 100 meter dari belakangmu. Inti dari perbedaan suara yang kamu dengar dari Andi dan Budi berkaitan dengan konsep..",
         opt: [
-            "Getaran partikel medium secara longitudinal.",
-            "Warna molekul gas nitrogen di udara.",
-            "Kecepatan rambat bunyi di medium tersebut.",
-            "Kerapatan massa jenis medium.",
-            "Suhu udara yang mempengaruhi kecepatan."
+            "Frekuensi bunyi yang dihasilkan Andi lebih tinggi daripada budi",
+            "Intensitas bunyi yang sampai ke telingamu berkurang seiring bertambahnya jarak",
+            "Kecepatan suara Andi lebih cepat sampai daripada suara budi",
+            "Taraf intensitas bunyi Budi lebih tinggi karen aberteriak ditempat terbuka",
+            "Gelombang bunyi Andi berubah bentuk menjadi gelombang transversal"
         ],
         ans: 1
     },
     {
         pilar: "dekomposisi",
-        image: "https://via.placeholder.com/600x300?text=Gambar+Tabung+Resonansi",
-        q: "(Resonansi) Untuk menentukan panjang gelombang melalui percobaan resonansi, bagian mana yang harus diurai (Dekomposisi) secara spesifik?",
+        image: "../foto/17.png",
+        q: "Siswa ingin mengukur cepat rambat bunyi di udara (v) menggunakan metode resonansi kolom udara (tabung organa ujung tertutup). Alat yang tersedia adalah tabung resonansi, garpu tala dengan frekuensi (f) yang diketahui, penggaris dan wadah air. Untuk menghitung cepat rambat bunyi (v), urutan langkah manakah yang paling benar untuk mendapatkan data yang valid dan meminimalkan kesalahan akibat end correction (koreksi ujung tabung)?",
         opt: [
-            "Massa tabung dan harga garpu tala.",
-            "Warna air dan jenis lantai laboratorium.",
-            "Panjang kolom udara, frekuensi sumber, dan kondisi ujung tabung.",
-            "Nama asisten laboratorium dan waktu praktikum.",
-            "Volume total air tanpa mengukur tinggi permukaan."
+            "Memukul garpu tala -> mencari resonansi pertama (L1) dan resonansi kedua (L2) -> menghitung λ = 2(L2-L1) -> menghitung v = f x λ",
+            "Memukul garpu tala -> mengukur panjang tabung -> menghitung v = f x λ",
+            "Memukul garpu tala -> menaik-turunkan permukaan air hingga terdengar bunyi paling keras (resonansi pertama) -> mengukur panjang kolom udara (L1) -> menghitung λ = 4L1 dan v = f x λ",
+            "Mengukur suhu ruangan -> memukul garpu tala -> mengukur panjang gelombang dengan penggaris",
+            "Mengukur panjang kolom udara -> memukul garpu tala -> menghitung v = L1/f"
         ],
-        ans: 2
+        ans: 0
     },
     {
         pilar: "pola",
-        image: "https://via.placeholder.com/600x300?text=Gambar+Dawai+Gitar+L",
-        q: "(Sumber Bunyi) Berdasarkan hukum Marsenne, jika panjang dawai (L) diperkecil, nada suara menjadi lebih tinggi. Pola hubungan fisis yang tepat adalah...",
+        image: "../foto/18.jpg",
+        q: "Siswa melakukan pengukuran intensitas bunyi di berbagai jarak dari sumber bunyi (speaker) yang konstan menggunakan sound level meter. Pada jarak 1 meter, intensitasnya adalah I. pada jarak 2 meter, intensitasnya menjadi 1/4I. pada jarak 3 meter intensitasnya menjadi 1/9I. Berdasarkan data tersebut, jika jarak sumber bunyi dijadikan 4 meter, berapa intensitas bunyi yang terukur?",
         opt: [
-            "Frekuensi berbanding lurus dengan panjang dawai.",
-            "Frekuensi tidak dipengaruhi oleh panjang dawai.",
-            "Frekuensi berbanding terbalik dengan panjang dawai.",
-            "Panjang dawai berbanding lurus dengan luas penampang.",
-            "Tegangan dawai berbanding terbalik dengan panjang."
+            "1/12 I",
+            "1/6 I",
+            "1/16 I",
+            "1/8 I",
+            "1/10 I"
         ],
         ans: 2
     },
     {
         pilar: "algoritma",
-        image: "https://via.placeholder.com/600x300?text=Gambar+Sonar+Kapal+Laut",
-        q: "(Aplikasi Bunyi) Kapal menggunakan sonar untuk mengukur kedalaman. Urutan langkah (Algoritma) perhitungan yang paling tepat adalah...",
+        image: "../foto/19.png",
+        q: "Dua sumber bunyi menghasilkan f1 = 300 Hz dan f2 = 305 Hz secara bersamaan. Siswa ingin menghitung berapa kali suara mengeras dan melemah dalam satu detik (Frekuensi pelayangan, fp). Prosedur manakah yang paling tepat untuk mendapatkan nilai fp?",
         opt: [
-            "Input v; Input t; d = v * t; Selesai.",
-            "Input v; Input t; d = (v * t) / 2; Tampilkan d.",
-            "Hitung v / t; Kurangi suhu; Selesai.",
-            "Pancarkan bunyi; Tunggu 1 jam; Tampilkan 0.",
-            "Input massa kapal; d = t / v; Tampilkan d."
+            "Menghitung fp = f1 + f2 = 300 + 305",
+            "Menghitung fp = f2 - f1 = 305 - 300",
+            "Menghitung fp = f1 + f2 / 2 = 300 + 305 /2 ",
+            "Menghitung fp = |f1 - f2| = |300 - 305|",
+            "Menghitung fp = f1 x f2 = 300 x 305"
         ],
-        ans: 1
+        ans: 3
     },
     {
         pilar: "abstraksi",
-        image: "https://via.placeholder.com/600x300?text=Gambar+Ambulan+Doppler",
-        q: "(Efek Doppler) Dalam menghitung frekuensi yang didengar dari sirine ambulan, variabel mana yang merupakan 'noise' (tidak relevan) dalam model matematika?",
+        image: "../foto/20.jpeg",
+        q: "Dalam menghitung frekuensi yang didengar dari sirine ambulan, variabel mana yang merupakan 'noise' (tidak relevan) dalam model matematika?",
         opt: [
             "Kecepatan sumber bunyi.",
             "Kecepatan pendengar.",
-            "Warna cat mobil ambulan.",
+            "Cepat rambat bunyi di udara.",
             "Frekuensi asli sirine.",
-            "Cepat rambat bunyi di udara."
+            "Warna cat mobil ambulan."
         ],
-        ans: 2
+        ans: 4
     }
 ];
 
